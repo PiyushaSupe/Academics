@@ -1,0 +1,30 @@
+mongosh
+
+show dbs
+use mydatabase
+
+db.createCollection("person")
+ db.person.insertOne({
+ person_id: 1,
+ name: "Amit Sharma",
+ addr:"Delhi",
+ profession:"Engineer"})
+
+ db.person.insertMany([
+ {person_id:2, name:"neha", addr:"Pune", profession:"Doctor"},
+ {person_id:3, name:"alok", addr:"Nagpur", profession:"Merchant Navy"},
+ {person_id:4, name:"akhilesh", addr:"Nashik", profession:"Doctor"},
+ ])
+
+db.person.find()
+db.person.find({ person_id: 1 })
+db.person.find().pretty()
+
+ db.person.updateOne( { person_id: 2 }, {$set: {profession:"Lawyer"}})
+ db.person.updateMany({ profession: "Doctor"}, {$set: {profession:"Surgeon"}})
+
+
+db.person.deleteOne({ person_id: 1 })
+db.person.deleteMany({ profession: "Lawyer" })
+ db.person.deleteMany({})
+

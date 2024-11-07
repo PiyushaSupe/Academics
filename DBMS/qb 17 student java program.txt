@@ -1,0 +1,145 @@
+CREATE TABLE student (
+    roll_no INT PRIMARY KEY,
+    name VARCHAR(50),
+    marks FLOAT,
+    class VARCHAR(10)
+);
+
+import java.sql.*;
+import java.util.Scanner;
+
+public class StudentManagement {
+
+    // Database connection details
+    static final String DB_URL = "jdbc:mysql://localhost:3306/your_database_name";
+    static final String USER = "your_username";
+    static final String PASS = "your_password";
+    static Connection conn = null;
+
+    public static void main(String[] args) {
+        try {
+            // Establish the connection
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            System.out.println("Connected to the database.");
+
+            Scanner scanner = new Scanner(System.in);
+            int choice;
+
+            // Menu-driven program
+            do {
+                System.out.println("\n--- Student Management System ---");
+                System.out.println("1. Add Student");
+                System.out.println("2. Update Student");
+                System.out.println("3. Delete Student");
+                System.out.println("4. Exit");
+                System.out.print("Enter your choice: ");
+                choice = scanner.nextInt();
+
+                switch (choice) {
+                    case 1:
+                        addStudent();
+                        break;
+                    case 2:
+                        updateStudent();
+                        break;
+                    case 3:
+                        deleteStudent();
+                        break;
+                    case 4:
+                        System.out.println("Exiting...");
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                }
+            } while (choice != 4);
+
+            scanner.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // Method to add a student
+    public static void addStudent() {
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.print("Enter Roll Number: ");
+            int rollNo = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+            System.out.print("Enter Name: ");
+            String name = scanner.nextLine();
+            System.out.print("Enter Marks: ");
+            float marks = scanner.nextFloat();
+            scanner.nextLine(); // Consume newline
+            System.out.print("Enter Class: ");
+            String className = scanner.nextLine();
+
+            String sql = "INSERT INTO student (roll_no, name, marks, class) VALUES (?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, rollNo);
+            stmt.setString(2, name);
+            stmt.setFloat(3, marks);
+            stmt.setString(4, className);
+            stmt.executeUpdate();
+            System.out.println("Student added successfully.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Method to update student details
+    public static void updateStudent() {
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.print("Enter Roll Number of student to update: ");
+            int rollNo = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+            System.out.print("Enter New Name: ");
+            String name = scanner.nextLine();
+            System.out.print("Enter New Marks: ");
+            float marks = scanner.nextFloat();
+            scanner.nextLine(); // Consume newline
+            System.out.print("Enter New Class: ");
+            String className = scanner.nextLine();
+
+            String sql = "UPDATE student SET name = ?, marks = ?, class = ? WHERE roll_no = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, name);
+            stmt.setFloat(2, marks);
+            stmt.setString(3, className);
+            stmt.setInt(4, rollNo);
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("Student updated successfully.");
+            } else {
+                System.out.println("Student not found.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Method to delete a student
+    public static void deleteStudent() {
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.print("Enter Roll Number of student to delete: ");
+            int rollNo = scanner.nextInt();
+
+            String sql = "DELETE FROM student WHERE roll_no = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, rollNo);
+            int rowsDeleted = stmt.executeUpdate();
+            if (rowsDeleted > 0) {
+                System.out.println("Student deleted successfully.");
+            } else {
+                System.out.println("Student not found.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}

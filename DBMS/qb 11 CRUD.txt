@@ -1,0 +1,40 @@
+mongosh
+show dbs
+use mydatabase2
+db.createCollection("items")
+db.items.insertOne({ "item_id": 6, "item_quantity": 80, "price": 25, "brand": "BrandD" });
+db.items.insertMany([
+    { "item_id": 1, "item_quantity": 100, "price": 50, "brand": "BrandA" },
+    { "item_id": 2, "item_quantity": 150, "price": 30, "brand": "BrandB" },
+    { "item_id": 3, "item_quantity": 200, "price": 20, "brand": "BrandA" },
+    { "item_id": 4, "item_quantity": 250, "price": 60, "brand": "BrandC" },
+    { "item_id": 5, "item_quantity": 300, "price": 40, "brand": "BrandB" }
+]);
+db.items.find().pretty();
+db.items.find({ item_id: 1 }).pretty();
+db.items.updateOne({ "item_id": 1 }, { $set: { "item_quantity": 120 } });
+db.items.find().pretty();
+db.items.updateMany(
+    { brand: "BrandA" },
+    { $inc: { item_quantity: 20 } }
+);
+db.items.find().pretty();
+db.items.deleteOne({ "item_id": 2 });
+db.items.find().pretty();
+db.items.deleteMany({ brand: "BrandB" })
+db.items.find().pretty();
+
+var mapFunction = function() {
+    emit(this.item_id, this.item_quantity);
+};
+
+var reduceFunction = function(key, values) {
+    return Array.sum(values);
+};
+
+
+db.items.mapReduce(
+    mapFunction,
+    reduceFunction,
+    { out: "item_quantity_count" }
+);

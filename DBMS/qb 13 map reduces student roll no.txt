@@ -1,0 +1,33 @@
+mongosh
+show dbs
+use mydatabase3
+
+db.createCollection("student")
+
+db.student.insertMany([
+    { roll_no: 1, name: "Alice", marks: 85, class: "5" },
+    { roll_no: 2, name: "Bob", marks: 90, class: "5" },
+    { roll_no: 3, name: "Charlie", marks: 75, class: "5" },
+    { roll_no: 4, name: "David", marks: 95, class: "5" },
+    { roll_no: 5, name: "Eva", marks: 80, class: "5" }
+])
+
+
+var mapFunction = function() {
+    emit(this.roll_no, this.marks); 
+};
+
+
+var reduceFunction = function(key, values) {
+    return Array.sum(values);  
+};
+
+
+db.student.mapReduce(
+    mapFunction,                      
+    reduceFunction,                  
+    { out: "total_marks" }           
+)
+
+
+db.total_marks.find().pretty()

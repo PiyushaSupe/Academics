@@ -1,0 +1,38 @@
+create database studentinfo;
+use studentinfo;
+
+
+CREATE TABLE student (
+    roll_no INT PRIMARY KEY,
+    name VARCHAR(100),
+    marks INT,
+    class VARCHAR(50)
+);
+
+INSERT INTO student (roll_no, name, marks, class ) VALUES
+(1, 'Anil Sharma', 780, '10th' ),
+(2, 'Neha Raina', 850, '12th'),
+(3, 'Rakhi Patel', 620, '11th');
+select* from student;
+
+ALTER TABLE student
+ADD COLUMN age INT;
+select* from student;
+
+ALTER TABLE student
+CHANGE marks total_marks INT;
+select* from student;
+
+UPDATE student
+SET total_marks = 900
+WHERE roll_no = 2;
+select * from student;
+
+
+DELETE FROM student
+WHERE roll_no = 3;
+select * from student;
+
+Alter table student
+drop column age;
+select* from student;

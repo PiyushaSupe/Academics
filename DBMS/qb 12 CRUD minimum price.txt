@@ -1,0 +1,35 @@
+mongosh 
+show dbs
+use mydatabase2
+db.createCollection("items")
+db.items.insertOne({ item_id: 101, item_quantity: 40, price: 140 , brand: "BrandD", discount: 10 });
+db.items.insertMany([
+    { item_id: 102, item_quantity: 50, price: 150, brand: "BrandA", discount: 10 },
+    { item_id: 103, item_quantity: 30, price: 250, brand: "BrandB", discount: 15 },
+    { item_id: 104, item_quantity: 20, price: 100, brand: "BrandC", discount: 5 },
+    { item_id: 105, item_quantity: 10, price: 300, brand: "BrandA", discount: 20 },
+    { item_id: 106, item_quantity: 40, price: 200, brand: "BrandB", discount: 25 }
+]);
+db.items.find().pretty()
+db.items.find({ item_id: 101 }).pretty();
+
+db.items.updateOne({ item_id: 101 },{ $set: { price: 160 } })
+db.items.find({item_id: 101}).pretty()
+
+db.items.updateMany({ brand: "BrandA" }, { $inc: { item_quantity: 10 } })
+db.items.find().pretty()
+
+db.items.aggregate([
+    { $group: { _id: "$brand", count: { $sum: 1 } } }
+])
+db.items.find().sort({ price: 1 }).limit(1).pretty();
+
+db.items.aggregate([
+    { $group: { _id: null, maxDiscount: { $max: "$discount" } } }
+])
+
+db.items.deleteOne({ item_id: 104 });
+db.items.find().pretty()
+
+db.items.deleteMany({ brand: "BrandB" })
+db.items.find().pretty()

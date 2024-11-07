@@ -1,0 +1,98 @@
+CREATE DATABASE library;
+USE library;
+
+CREATE TABLE Borrower (
+    Rollno INT(4),
+    Name VARCHAR(20),
+    DateofIssue DATE,
+    NameofBook VARCHAR(30),
+    Status VARCHAR(10)
+);
+
+INSERT INTO Borrower VALUES (14, 'Ram', '2024-10-19', 'Operating System', 'I');
+INSERT INTO Borrower VALUES (27, 'Soham', '2024-10-24', 'Object Oriented Programming', 'I');
+INSERT INTO Borrower VALUES (34, 'Mohan', '2024-09-12', 'Microprocessor', 'I');
+INSERT INTO Borrower VALUES (48, 'Om', '2024-09-19', 'Mechanics', 'I');
+
+SELECT * FROM Borrower;
+
+CREATE TABLE Fine (
+    Rollno INT(4),
+    Date DATE,
+    Amount INT(10)
+);
+
+DELIMITER //
+
+CREATE PROCEDURE calc_Fine(IN r INT(10), IN b VARCHAR(30))
+BEGIN
+    DECLARE doi DATE;
+    DECLARE diff INT(3);
+    DECLARE CONTINUE HANDLER FOR NOT FOUND 
+        BEGIN
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'No matching Borrower record found for the given roll number and book name';
+        END;
+    
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+        BEGIN
+            ROLLBACK;
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'An error occurred while calculating fine.';
+        END;
+
+    START TRANSACTION;
+
+    SELECT DateofIssue INTO doi FROM Borrower WHERE Rollno = r AND NameofBook = b;
+
+    SELECT DATEDIFF(CURDATE(), doi) INTO diff;
+
+    IF diff >= 15 AND diff <= 30 THEN
+        INSERT INTO Fine VALUES (r, CURDATE(), diff * 5);
+    ELSEIF diff > 30 THEN
+        INSERT INTO Fine VALUES (r, CURDATE(), diff * 50);
+    END IF;
+
+    COMMIT;
+END//
+
+CREATE PROCEDURE submit(IN r INT(2))
+BEGIN
+    DECLARE CONTINUE HANDLER FOR NOT FOUND 
+        BEGIN
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'No matching Borrower record found for the given roll number';
+        END;
+    
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+        BEGIN
+            ROLLBACK;
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'An error occurred while submitting the book.';
+        END;
+
+    START TRANSACTION;
+
+    UPDATE Borrower SET Status = 'R' WHERE Rollno = r;
+    DELETE FROM Fine WHERE Rollno = r;
+
+    COMMIT;
+END//
+
+DELIMITER ;
+
+CALL calc_Fine(14, 'Operating System'); 
+SELECT * FROM Fine; 
+
+CALL calc_Fine(27, 'Object Oriented Programming'); 
+CALL calc_Fine(34, 'Microprocessor'); 
+CALL calc_Fine(48, 'Mechanics'); 
+SELECT * FROM Fine;
+
+CALL submit(14); 
+CALL submit(27); 
+CALL submit(48); 
+CALL submit(34); 
+
+SELECT * FROM Fine; 
+SELECT * FROM Borrower;

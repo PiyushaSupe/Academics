@@ -1,0 +1,41 @@
+mongosh
+show dbs
+use mydatabase1
+db.createCollection("employee")
+db.employee.insertMany([
+  { emp_id: 1, e_name: "Rahul Sharma", salary: 50000, Date_of_Joining: new Date("2015-06-10"), Dapt_no: "Sales", Designation: "Sales Executive" },
+  { emp_id: 2, e_name: "Neha Patel", salary: 60000, Date_of_Joining: new Date("2016-06-15"), Dapt_no: "Sales", Designation: "Sales Manager" },
+  { emp_id: 3, e_name: "Amit Verma", salary: 45000, Date_of_Joining: new Date("2016-06-05"), Dapt_no: "Production", Designation: "Production Engineer" },
+  { emp_id: 4, e_name: "Priya Singh", salary: 70000, Date_of_Joining: new Date("2018-05-20"), Dapt_no: "Production", Designation: "Production Manager" },
+  { emp_id: 5, e_name: "Suresh Reddy", salary: 55000, Date_of_Joining: new Date("2019-08-10"), Dapt_no: "HR", Designation: "HR Executive" },
+  { emp_id: 6, e_name: "Anjali Mehta", salary: 80000, Date_of_Joining: new Date("2020-07-01"), Dapt_no: "Sales", Designation: "Sales Lead" }
+])
+
+db.employee.aggregate([
+  { $group: { _id: "$Dapt_no", count: { $sum: 1 } } }
+])
+
+db.employee.aggregate([
+  { $match: { Dapt_no: "Sales" } },
+  { $group: { _id: "$Dapt_no", avgSalary: { $avg: "$salary" } } }
+])
+
+db.employee.aggregate([
+  { $match: { Date_of_Joining: { $gte: new Date("2016-06-01"), $lt: new Date("2016-07-01") } } },
+  { $group: { _id: null, minSalary: { $min: "$salary" } } }
+])
+
+db.employee.aggregate([
+  { $match: { Dapt_no: "Production" } },
+  { $group: { _id: "$Dapt_no", maxSalary: { $max: "$salary" } } }
+])
+
+db.employee.aggregate([
+  { $sort: { Date_of_Joining: 1 } },  
+  { $group: {
+      _id: "$Dapt_no",
+      firstEmployee: { $first: "$$ROOT" },
+      lastEmployee: { $last: "$$ROOT" }
+    }
+  }
+])
