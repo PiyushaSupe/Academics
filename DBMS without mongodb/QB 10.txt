@@ -1,0 +1,50 @@
+create database iteminfo;
+use iteminfo;
+-- 10.1 Create the Item table
+CREATE TABLE Item (
+    Item_ID INT PRIMARY KEY,
+    Item_quantity INT,
+    Price DECIMAL(10, 2),
+    Brand VARCHAR(50)
+);
+
+-- 10.2 Insert sample data into the Item table
+INSERT INTO Item (Item_ID, Item_quantity, Price, Brand) VALUES
+(1, 100, 500.00, 'BrandA'),
+(2, 150, 750.00, 'BrandB'),
+(3, 200, 1200.00, 'BrandA'),
+(4, 50, 350.00, 'BrandC'),
+(5, 75, 400.00, 'BrandB'),
+(6, 120, 900.00, 'BrandA');
+
+-- Expected table contents:
+-- +---------+--------------+--------+--------+
+-- | Item_ID | Item_quantity| Price  | Brand  |
+-- +---------+--------------+--------+--------+
+-- |    1    |     100      | 500.00 | BrandA |
+-- |    2    |     150      | 750.00 | BrandB |
+-- |    3    |     200      |1200.00 | BrandA |
+-- |    4    |      50      | 350.00 | BrandC |
+-- |    5    |      75      | 400.00 | BrandB |
+-- |    6    |     120      | 900.00 | BrandA |
+-- +---------+--------------+--------+--------+
+
+-- 10.3 Perform MapReduce to count the quantity of each brand
+-- Map: Select the Brand and Item_quantity
+-- Reduce: Sum up the quantities for each brand
+
+SELECT Brand, SUM(Item_quantity) AS Total_Quantity
+FROM Item
+GROUP BY Brand;
+
+-- Expected result table:
+-- +--------+---------------+
+-- | Brand  | Total_Quantity|
+-- +--------+---------------+
+-- | BrandA |      420      |
+-- | BrandB |      225      |
+-- | BrandC |       50      |
+-- +--------+---------------+
+
+-- Explanation:
+-- This query performs the MapReduce operation by selecting each Brand and aggregating the Item_quantity for each one to get the total quantity per brand.

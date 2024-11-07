@@ -1,0 +1,83 @@
+create database employeeinfo;
+use employeeinfo;
+-- 9.1 Create the employee, works, company, and manages tables (if not already created)
+CREATE TABLE employee (
+    employee_name VARCHAR(100),
+    street VARCHAR(100),
+    city VARCHAR(50)
+);
+
+CREATE TABLE works (
+    employee_name VARCHAR(100),
+    company_name VARCHAR(100),
+    salary DECIMAL(10, 2)
+);
+
+CREATE TABLE company (
+    company_name VARCHAR(100),
+    city VARCHAR(50)
+);
+
+CREATE TABLE manages (
+    employee_name VARCHAR(100),
+    manager_name VARCHAR(100)
+);
+
+-- 9.2 Insert sample data into employee table
+INSERT INTO employee (employee_name, street, city) VALUES
+('Amit Sharma', 'MG Road', 'Mumbai'),
+('Suman Rao', 'MG Road', 'Mumbai'),
+('Rakesh Kumar', 'Park Street', 'Delhi'),
+('Neha Patel', 'Civil Lines', 'Delhi');
+
+-- 9.3 Insert sample data into works table
+INSERT INTO works (employee_name, company_name, salary) VALUES
+('Amit Sharma', 'TechCorp', 5000),
+('Suman Rao', 'TechCorp', 3000),
+('Rakesh Kumar', 'DataSolutions', 4000),
+('Neha Patel', 'DataSolutions', 4500);
+
+-- 9.4 Insert sample data into company table
+INSERT INTO company (company_name, city) VALUES
+('TechCorp', 'Mumbai'),
+('DataSolutions', 'Delhi');
+
+-- 9.5 Insert sample data into manages table
+INSERT INTO manages (employee_name, manager_name) VALUES
+('Amit Sharma', 'Suman Rao'),
+('Rakesh Kumar', 'Neha Patel'),
+('Suman Rao', 'Amit Sharma');
+
+-- 9.a Find the name of the company with the smallest payroll
+SELECT company_name
+FROM works
+GROUP BY company_name
+ORDER BY SUM(salary) ASC
+LIMIT 1;
+
+-- Expected result table:
+-- +--------------+
+-- | company_name |
+-- +--------------+
+-- | TechCorp     |
+-- +--------------+
+
+-- Explanation:
+-- This query calculates the total payroll for each company, ordering by the smallest total salary sum, and limits the output to show only the company with the smallest payroll.
+
+-- 9.b Find names of employees who live in the same cities and on the same streets as their managers
+SELECT e1.employee_name AS employee, e2.employee_name AS manager
+FROM employee e1
+JOIN manages m ON e1.employee_name = m.employee_name
+JOIN employee e2 ON m.manager_name = e2.employee_name
+WHERE e1.city = e2.city AND e1.street = e2.street;
+
+-- Expected result table:
+-- +----------+---------+
+-- | employee | manager |
+-- +----------+---------+
+-- | Amit Sharma | Suman Rao |
+-- +----------+---------+
+
+-- Explanation:
+-- This query joins the `employee` table twice to compare employees with their managers based on city and street attributes, showing pairs where both employee and manager share the same location.

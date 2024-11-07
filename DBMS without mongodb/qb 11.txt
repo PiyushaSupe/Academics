@@ -1,0 +1,62 @@
+create database iteminfo;
+use iteminfo;
+-- 11.1 Create the Item table
+CREATE TABLE Item (
+    Item_ID INT PRIMARY KEY,
+    Item_quantity INT,
+    Price DECIMAL(10, 2),
+    Brand VARCHAR(50)
+);
+
+-- 11.2 Insert sample data into the Item table
+INSERT INTO Item (Item_ID, Item_quantity, Price, Brand) VALUES
+(1, 80, 300.00, 'BrandX'),
+(2, 120, 500.00, 'BrandY'),
+(3, 60, 700.00, 'BrandZ'),
+(4, 90, 450.00, 'BrandX'),
+(5, 110, 550.00, 'BrandY'),
+(6, 130, 400.00, 'BrandZ');
+
+-- Expected table contents:
+-- +---------+--------------+--------+--------+
+-- | Item_ID | Item_quantity| Price  | Brand  |
+-- +---------+--------------+--------+--------+
+-- |    1    |      80      | 300.00 | BrandX |
+-- |    2    |     120      | 500.00 | BrandY |
+-- |    3    |      60      | 700.00 | BrandZ |
+-- |    4    |      90      | 450.00 | BrandX |
+-- |    5    |     110      | 550.00 | BrandY |
+-- |    6    |     130      | 400.00 | BrandZ |
+-- +---------+--------------+--------+--------+
+
+-- 11.3 Perform a sample CRUD operation: Update quantity of an item
+UPDATE Item
+SET Item_quantity = 150
+WHERE Item_ID = 1;
+
+-- Expected result after update:
+-- +---------+--------------+--------+--------+
+-- | Item_ID | Item_quantity| Price  | Brand  |
+-- +---------+--------------+--------+--------+
+-- |    1    |     150      | 300.00 | BrandX |
+-- +---------+--------------+--------+--------+
+
+-- 11.4 Delete an item from the table
+DELETE FROM Item
+WHERE Item_ID = 3;
+
+-- Expected result after delete:
+-- +---------+--------------+--------+--------+
+-- | Item_ID | Item_quantity| Price  | Brand  |
+-- +---------+--------------+--------+--------+
+-- |    1    |     150      | 300.00 | BrandX |
+-- |    2    |     120      | 500.00 | BrandY |
+-- |    4    |      90      | 450.00 | BrandX |
+-- |    5    |     110      | 550.00 | BrandY |
+-- |    6    |     130      | 400.00 | BrandZ |
+-- +---------+--------------+--------+--------+
+
+-- Explanation:
+-- This code includes CRUD operations for the `Item` table, with an update to change `Item_quantity` for a specific item, and a delete operation to remove an item.
+-- Sample expected result tables are included to demonstrate the effect of each operation.
+select * from Item;

@@ -1,0 +1,54 @@
+create database stud;
+use stud;
+-- 13.1 Create the student table
+CREATE TABLE student (
+    roll_no INT PRIMARY KEY,
+    name VARCHAR(100),
+    marks INT,
+    class VARCHAR(50)
+);
+
+-- 13.2 Insert sample data into the student table
+INSERT INTO student (roll_no, name, marks, class) VALUES
+(1, 'Aman Verma', 75, '10th'),
+(2, 'Neha Sharma', 85, '10th'),
+(3, 'Rakesh Patil', 90, '11th'),
+(4, 'Priya Das', 95, '11th'),
+(5, 'Ravi Kumar', 80, '10th');
+
+-- Display table after insertion
+SELECT * FROM student;
+
+-- Expected Output:
+-- +---------+-------------+-------+-------+
+-- | roll_no | name        | marks | class |
+-- +---------+-------------+-------+-------+
+-- |    1    | Aman Verma  |  75   |  10th |
+-- |    2    | Neha Sharma |  85   |  10th |
+-- |    3    | Rakesh Patil|  90   |  11th |
+-- |    4    | Priya Das   |  95   |  11th |
+-- |    5    | Ravi Kumar  |  80   |  10th |
+-- +---------+-------------+-------+-------+
+
+-- 13.3 MapReduce operation: Calculate total marks for each student
+-- Map: Select roll_no and sum of marks
+-- Reduce: Aggregate marks by roll_no
+
+SELECT roll_no, SUM(marks) AS total_marks
+FROM student
+GROUP BY roll_no;
+
+-- Expected Output:
+-- +---------+-------------+
+-- | roll_no | total_marks |
+-- +---------+-------------+
+-- |    1    |     75      |
+-- |    2    |     85      |
+-- |    3    |     90      |
+-- |    4    |     95      |
+-- |    5    |     80      |
+-- +---------+-------------+
+
+-- Explanation:
+-- This MapReduce operation calculates each student's total marks by grouping by roll_no.
+-- It’s useful when multiple entries per student need aggregation, though in this case, marks are single entries per student.

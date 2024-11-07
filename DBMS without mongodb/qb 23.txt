@@ -1,0 +1,120 @@
+create database employee;
+use employee;
+-- 23.1 Create the employee table
+CREATE TABLE employee (
+    emp_id INT PRIMARY KEY,
+    e_name VARCHAR(100),
+    salary DECIMAL(10, 2),
+    date_of_joining DATE,
+    dapt_no INT,
+    designation VARCHAR(50)
+);
+
+-- 23.2 Insert sample data into employee table
+INSERT INTO employee (emp_id, e_name, salary, date_of_joining, dapt_no, designation) VALUES
+(1, 'Amit Kumar', 50000, '2020-01-15', 1, 'Manager'),
+(2, 'Neha Singh', 45000, '2019-03-20', 2, 'Marketing'),
+(3, 'Rajesh Patil', 40000, '2021-06-18', 3, 'Developer'),
+(4, 'Priya Desai', 47000, '2018-09-10', 2, 'Sales'),
+(5, 'Rakesh Sharma', 52000, '2017-11-05', 1, 'Manager');
+
+-- Display table contents
+SELECT * FROM employee;
+
+-- Expected Output:
+-- +--------+-------------+--------+----------------+---------+------------+
+-- | emp_id | e_name      | salary | date_of_joining| dapt_no | designation|
+-- +--------+-------------+--------+----------------+---------+------------+
+-- |   1    | Amit Kumar  | 50000  | 2020-01-15     |    1    | Manager    |
+-- |   2    | Neha Singh  | 45000  | 2019-03-20     |    2    | Marketing  |
+-- |   3    | Rajesh Patil| 40000  | 2021-06-18     |    3    | Developer  |
+-- |   4    | Priya Desai | 47000  | 2018-09-10     |    2    | Sales      |
+-- |   5    | Rakesh Sharma| 52000 | 2017-11-05     |    1    | Manager    |
+-- +--------+-------------+--------+----------------+---------+------------+
+
+-- 23.3 Create a view `emp_vl` of employee with emp_id, e_name, and dapt_no
+CREATE VIEW emp_vl AS
+SELECT emp_id, e_name, dapt_no
+FROM employee;
+
+-- Display the view
+SELECT * FROM emp_vl;
+
+-- Expected Output:
+-- +--------+-------------+---------+
+-- | emp_id | e_name      | dapt_no |
+-- +--------+-------------+---------+
+-- |   1    | Amit Kumar  |    1    |
+-- |   2    | Neha Singh  |    2    |
+-- |   3    | Rajesh Patil|    3    |
+-- |   4    | Priya Desai |    2    |
+-- |   5    | Rakesh Sharma|   1    |
+-- +--------+-------------+---------+
+
+-- 23.4 Display name and department of employees in 'Manager' or 'Marketing' department
+SELECT e_name, dapt_no
+FROM employee
+WHERE designation = 'Manager' OR designation = 'Marketing';
+
+-- Expected Output:
+-- +-------------+---------+
+-- | e_name      | dapt_no |
+-- +-------------+---------+
+-- | Amit Kumar  |    1    |
+-- | Neha Singh  |    2    |
+-- | Rakesh Sharma|   1    |
+-- +-------------+---------+
+
+-- 23.5 Display employees who were hired earliest or latest
+SELECT * FROM employee
+ORDER BY date_of_joining ASC
+LIMIT 1;
+SELECT * FROM employee
+ORDER BY date_of_joining DESC
+LIMIT 1;
+
+-- Expected Output for earliest:
+-- +--------+-------------+--------+----------------+---------+------------+
+-- | emp_id | e_name      | salary | date_of_joining| dapt_no | designation|
+-- +--------+-------------+--------+----------------+---------+------------+
+-- |   5    | Rakesh Sharma| 52000 | 2017-11-05     |    1    | Manager    |
+-- Expected Output for latest:
+-- +--------+-------------+--------+----------------+---------+------------+
+-- | emp_id | e_name      | salary | date_of_joining| dapt_no | designation|
+-- +--------+-------------+--------+----------------+---------+------------+
+-- |   3    | Rajesh Patil| 40000  | 2021-06-18     |    3    | Developer  |
+
+-- 23.6 Display name and department number of employees who are managers or market analysts
+SELECT e_name, dapt_no
+FROM employee
+WHERE designation IN ('Manager', 'Market Analyst');
+
+-- Expected Output:
+-- +-------------+---------+
+-- | e_name      | dapt_no |
+-- +-------------+---------+
+-- | Amit Kumar  |    1    |
+-- | Rakesh Sharma|   1    |
+-- +-------------+---------+
+
+-- 23.7 List employees hired in August
+SELECT * FROM employee
+WHERE MONTH(date_of_joining) = 8;
+
+-- Expected Output:
+-- No output in this example, as no employees were hired in August
+
+-- 23.8 List employees hired after 31/12/2006
+SELECT * FROM employee
+WHERE date_of_joining > '2006-12-31';
+
+-- Expected Output:
+-- +--------+-------------+--------+----------------+---------+------------+
+-- | emp_id | e_name      | salary | date_of_joining| dapt_no | designation|
+-- +--------+-------------+--------+----------------+---------+------------+
+-- |   1    | Amit Kumar  | 50000  | 2020-01-15     |    1    | Manager    |
+-- |   2    | Neha Singh  | 45000  | 2019-03-20     |    2    | Marketing  |
+-- |   3    | Rajesh Patil| 40000  | 2021-06-18     |    3    | Developer  |
+-- |   4    | Priya Desai | 47000  | 2018-09-10     |    2    | Sales      |
+-- |   5    | Rakesh Sharma| 52000 | 2017-11-05     |    1    | Manager    |
+-- +--------+-------------+--------+----------------+---------+------------+

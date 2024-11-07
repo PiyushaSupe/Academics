@@ -1,0 +1,106 @@
+create database roll;
+use roll;
+-- 21.1 Create the N_RollCall table (New Roll Call)
+CREATE TABLE N_RollCall (
+    roll_no INT PRIMARY KEY,
+    name VARCHAR(100),
+    class VARCHAR(50)
+);
+
+-- 21.2 Create the O_RollCall table (Old Roll Call)
+CREATE TABLE O_RollCall (
+    roll_no INT PRIMARY KEY,
+    name VARCHAR(100),
+    class VARCHAR(50)
+);
+
+-- 21.3 Insert sample data into N_RollCall
+INSERT INTO N_RollCall (roll_no, name, class) VALUES
+(1, 'Amit Kumar', '10th'),
+(2, 'Neha Singh', '12th'),
+(3, 'Rajesh Patil', '10th');
+
+-- 21.4 Insert sample data into O_RollCall
+INSERT INTO O_RollCall (roll_no, name, class) VALUES
+(2, 'Neha Singh', '12th'),
+(4, 'Priya Desai', '11th');
+
+-- Display both tables before merging
+SELECT * FROM N_RollCall;
+SELECT * FROM O_RollCall;
+
+-- Expected N_RollCall Output:
+-- +---------+-------------+-------+
+-- | roll_no | name        | class |
+-- +---------+-------------+-------+
+-- |    1    | Amit Kumar  | 10th  |
+-- |    2    | Neha Singh  | 12th  |
+-- |    3    | Rajesh Patil| 10th  |
+-- +---------+-------------+-------+
+
+-- Expected O_RollCall Output:
+-- +---------+-------------+-------+
+-- | roll_no | name        | class |
+-- +---------+-------------+-------+
+-- |    2    | Neha Singh  | 12th  |
+-- |    4    | Priya Desai | 11th  |
+-- +---------+-------------+-------+
+
+-- 21.5 Corrected PL/SQL block using an explicit cursor with existence check
+DELIMITER //
+
+CREATE PROCEDURE merge_rollcall_data()
+BEGIN
+    DECLARE v_roll_no INT;
+    DECLARE v_name VARCHAR(100);
+    DECLARE v_class VARCHAR(50);
+    
+    DECLARE done INT DEFAULT 0;
+    
+    DECLARE n_rollcall_cursor CURSOR FOR
+        SELECT roll_no, name, class FROM N_RollCall;
+    
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    
+    OPEN n_rollcall_cursor;
+    
+    read_loop: LOOP
+        FETCH n_rollcall_cursor INTO v_roll_no, v_name, v_class;
+        
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+        
+        -- Check if roll_no exists in O_RollCall
+        IF (SELECT COUNT(*) FROM O_RollCall WHERE roll_no = v_roll_no) = 0 THEN
+            INSERT INTO O_RollCall (roll_no, name, class)
+            VALUES (v_roll_no, v_name, v_class);
+        END IF;
+    END LOOP;
+    
+    CLOSE n_rollcall_cursor;
+END;
+//
+
+-- Reset the delimiter back to the default
+DELIMITER ;
+
+-- 21.6 Call the procedure to perform the merge operation
+CALL merge_rollcall_data();
+
+-- Display O_RollCall after merging
+SELECT * FROM O_RollCall;
+
+-- Expected Output:
+-- +---------+-------------+-------+
+-- | roll_no | name        | class |
+-- +---------+-------------+-------+
+-- |    2    | Neha Singh  | 12th  |
+-- |    4    | Priya Desai | 11th  |
+-- |    1    | Amit Kumar  | 10th  |
+-- |    3    | Rajesh Patil| 10th  |
+-- +---------+-------------+-------+
+
+-- Explanation:
+-- This PL/SQL block uses an explicit cursor to iterate through each record in `N_RollCall`.
+-- Before each insert, it checks if the `roll_no` already exists in `O_RollCall` to avoid duplicates.

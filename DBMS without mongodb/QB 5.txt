@@ -1,0 +1,57 @@
+create database library;
+use library;
+-- 5.1 Create the Borrower and Fine tables with primary key constraints
+CREATE TABLE Borrower (
+    RollNo INT PRIMARY KEY,
+    Name VARCHAR(100),
+    DateofIssue DATE,
+    NameofBook VARCHAR(100),
+    Status VARCHAR(10) -- Values are either 'Issued' or 'Returned'
+);
+
+CREATE TABLE Fine (
+    Roll_no INT,
+    Date DATE,
+    Amt DECIMAL(10, 2),
+    PRIMARY KEY (Roll_no, Date)
+);
+
+-- 5.2 Insert 10 records into Borrower table
+INSERT INTO Borrower (RollNo, Name, DateofIssue, NameofBook, Status) VALUES
+(1, 'Anil Kumar', '2023-01-10', 'Database Systems', 'Issued'),
+(2, 'Sunita Singh', '2023-01-15', 'Operating Systems', 'Returned'),
+(3, 'Ravi Patel', '2023-01-20', 'Computer Networks', 'Issued'),
+(4, 'Priya Das', '2023-01-25', 'Algorithms', 'Returned'),
+(5, 'Vikram Desai', '2023-02-01', 'Data Structures', 'Issued'),
+(6, 'Kiran Gupta', '2023-02-05', 'Software Engineering', 'Returned'),
+(7, 'Neha Rao', '2023-02-10', 'Discrete Mathematics', 'Issued'),
+(8, 'Rajesh Khanna', '2023-02-15', 'Artificial Intelligence', 'Issued'),
+(9, 'Amitabh Bhatt', '2023-02-20', 'Machine Learning', 'Returned'),
+(10, 'Pooja Joshi', '2023-02-25', 'Big Data', 'Issued');
+
+-- 5.3 Insert 10 records into Fine table
+INSERT INTO Fine (Roll_no, Date, Amt) VALUES
+(1, '2023-01-20', 50),
+(2, '2023-01-25', 20),
+(3, '2023-02-05', 30),
+(4, '2023-02-10', 10),
+(5, '2023-02-15', 40),
+(6, '2023-02-18', 25),
+(7, '2023-02-22', 15),
+(8, '2023-02-28', 35),
+(9, '2023-03-02', 60),
+(10, '2023-03-05', 45);
+
+-- 5.4 Find the count of books with 'Issued' status
+SELECT COUNT(*) AS Issued_Books_Count
+FROM Borrower
+WHERE Status = 'Issued';
+
+-- 5.5 Display all records from the Borrower table
+SELECT * FROM Borrower;
+
+-- 5.6 Display RollNo of students whose DateofIssue is the same
+SELECT RollNo, DateofIssue
+FROM Borrower
+GROUP BY DateofIssue
+HAVING COUNT(*) > 1;

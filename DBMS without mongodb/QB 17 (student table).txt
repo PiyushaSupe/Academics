@@ -1,0 +1,142 @@
+import java.sql.*; // Import JDBC classes
+import java.util.Scanner; // Import Scanner for user input
+
+public class StudentCRUD {
+    // Database connection details
+    private static final String URL = "jdbc:mysql://localhost:3306/your_database"; // Change to your DB URL
+    private static final String USER = "your_username"; // Change to your DB username
+    private static final String PASSWORD = "your_password"; // Change to your DB password
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in); // Create a Scanner object for user input
+        int choice;
+
+        // Menu loop for user interaction
+        while (true) {
+            System.out.println("Menu:");
+            System.out.println("1. Add Student");
+            System.out.println("2. Update Student");
+            System.out.println("3. Delete Student");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt(); // Read user choice
+            scanner.nextLine(); // Consume newline
+
+            // Switch case to execute the corresponding operation based on user choice
+            switch (choice) {
+                case 1:
+                    addStudent(scanner); // Call method to add a student
+                    break;
+                case 2:
+                    updateStudent(scanner); // Call method to update a student
+                    break;
+                case 3:
+                    deleteStudent(scanner); // Call method to delete a student
+                    break;
+                case 4:
+                    System.out.println("Exiting..."); // Exit message
+                    scanner.close(); // Close the scanner
+                    return; // Exit the program
+                default:
+                    System.out.println("Invalid choice. Please try again."); // Handle invalid input
+            }
+        }
+    }
+
+    // Method to add a new student to the database
+    private static void addStudent(Scanner scanner) {
+        // Try-with-resources to ensure the connection is closed after use
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            // Gather student information from user
+            System.out.print("Enter Roll No: ");
+            int rollNo = scanner.nextInt(); // Read roll number
+            scanner.nextLine(); // Consume newline
+            System.out.print("Enter Name: ");
+            String name = scanner.nextLine(); // Read name
+            System.out.print("Enter Marks: ");
+            int marks = scanner.nextInt(); // Read marks
+            scanner.nextLine(); // Consume newline
+            System.out.print("Enter Class: ");
+            String className = scanner.nextLine(); // Read class
+
+            // SQL statement for inserting a new student
+            String sql = "INSERT INTO student (roll_no, name, marks, class) VALUES (?, ?, ?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(sql); // Prepare the statement
+            pstmt.setInt(1, rollNo); // Set roll number
+            pstmt.setString(2, name); // Set name
+            pstmt.setInt(3, marks); // Set marks
+            pstmt.setString(4, className); // Set class
+            pstmt.executeUpdate(); // Execute the insert operation
+
+            System.out.println("Student added successfully!"); // Success message
+        } catch (SQLException e) {
+            // Handle any SQL exceptions
+            System.out.println("Error adding student: " + e.getMessage());
+        }
+    }
+
+    // Method to update an existing student's details
+    private static void updateStudent(Scanner scanner) {
+        // Try-with-resources for database connection
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            // Gather the roll number of the student to be updated
+            System.out.print("Enter Roll No of the student to update: ");
+            int rollNo = scanner.nextInt(); // Read roll number
+            scanner.nextLine(); // Consume newline
+
+            // Gather new student information from user
+            System.out.print("Enter new Name: ");
+            String name = scanner.nextLine(); // Read new name
+            System.out.print("Enter new Marks: ");
+            int marks = scanner.nextInt(); // Read new marks
+            scanner.nextLine(); // Consume newline
+            System.out.print("Enter new Class: ");
+            String className = scanner.nextLine(); // Read new class
+
+            // SQL statement for updating the student details
+            String sql = "UPDATE student SET name = ?, marks = ?, class = ? WHERE roll_no = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql); // Prepare the statement
+            pstmt.setString(1, name); // Set new name
+            pstmt.setInt(2, marks); // Set new marks
+            pstmt.setString(3, className); // Set new class
+            pstmt.setInt(4, rollNo); // Set roll number for the WHERE clause
+            int rowsAffected = pstmt.executeUpdate(); // Execute the update operation
+
+            // Check if the update was successful
+            if (rowsAffected > 0) {
+                System.out.println("Student updated successfully!"); // Success message
+            } else {
+                System.out.println("No student found with that Roll No."); // No record found
+            }
+        } catch (SQLException e) {
+            // Handle any SQL exceptions
+            System.out.println("Error updating student: " + e.getMessage());
+        }
+    }
+
+    // Method to delete a student from the database
+    private static void deleteStudent(Scanner scanner) {
+        // Try-with-resources for database connection
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            // Gather the roll number of the student to be deleted
+            System.out.print("Enter Roll No of the student to delete: ");
+            int rollNo = scanner.nextInt(); // Read roll number
+
+            // SQL statement for deleting the student
+            String sql = "DELETE FROM student WHERE roll_no = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql); // Prepare the statement
+            pstmt.setInt(1, rollNo); // Set roll number for the WHERE clause
+            int rowsAffected = pstmt.executeUpdate(); // Execute the delete operation
+
+            // Check if the deletion was successful
+            if (rowsAffected > 0) {
+                System.out.println("Student deleted successfully!"); // Success message
+            } else {
+                System.out.println("No student found with that Roll No."); // No record found
+            }
+        } catch (SQLException e) {
+            // Handle any SQL exceptions
+            System.out.println("Error deleting student: " + e.getMessage());
+        }
+    }
+}

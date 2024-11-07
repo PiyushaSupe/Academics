@@ -1,0 +1,85 @@
+create database clientinfo;
+use clientinfo;
+-- 20.1 Create the client_master table
+CREATE TABLE client_master (
+    c_id INT PRIMARY KEY,
+    c_name VARCHAR(100),
+    acc_no INT
+);
+
+-- 20.2 Create the client_Audit table to store changes
+CREATE TABLE client_Audit (
+    audit_id INT AUTO_INCREMENT PRIMARY KEY,
+    c_id INT,
+    c_name VARCHAR(100),
+    acc_no INT,
+    action_type VARCHAR(10), -- 'INSERT' or 'UPDATE'
+    action_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 20.3 Insert sample data into client_master table
+INSERT INTO client_master (c_id, c_name, acc_no) VALUES
+(1, 'Amit Kumar', 12345),
+(2, 'Neha Singh', 67890),
+(3, 'Rajesh Patil', 11223);
+
+-- Display table contents before trigger actions
+SELECT * FROM client_master;
+
+-- Expected Output:
+-- +-------+-------------+---------+
+-- | c_id  | c_name      | acc_no  |
+-- +-------+-------------+---------+
+-- |   1   | Amit Kumar  | 12345   |
+-- |   2   | Neha Singh  | 67890   |
+-- |   3   | Rajesh Patil| 11223   |
+-- +-------+-------------+---------+
+
+-- 20.4 Use a custom delimiter to handle the trigger's BEGIN...END block
+DELIMITER //
+
+-- Trigger to track insertions into client_master
+CREATE TRIGGER client_insert_audit
+AFTER INSERT ON client_master
+FOR EACH ROW
+BEGIN
+    INSERT INTO client_Audit (c_id, c_name, acc_no, action_type)
+    VALUES (NEW.c_id, NEW.c_name, NEW.acc_no, 'INSERT');
+END;
+//
+
+-- Trigger to track updates on client_master
+CREATE TRIGGER client_update_audit
+AFTER UPDATE ON client_master
+FOR EACH ROW
+BEGIN
+    INSERT INTO client_Audit (c_id, c_name, acc_no, action_type)
+    VALUES (OLD.c_id, OLD.c_name, OLD.acc_no, 'UPDATE');
+END;
+//
+
+-- Reset the delimiter back to the default
+DELIMITER ;
+
+-- 20.5 Perform an insert operation to trigger the insert audit
+INSERT INTO client_master (c_id, c_name, acc_no) VALUES (4, 'Pooja Verma', 33445);
+
+-- 20.6 Perform an update operation to trigger the update audit
+UPDATE client_master
+SET acc_no = 55678
+WHERE c_id = 1;
+
+-- Display audit table contents after insert and update operations
+SELECT * FROM client_Audit;
+
+-- Expected Output:
+-- +----------+-------+-------------+---------+-------------+---------------------+
+-- | audit_id | c_id  | c_name      | acc_no  | action_type | action_date         |
+-- +----------+-------+-------------+---------+-------------+---------------------+
+-- |    1     |   4   | Pooja Verma | 33445   | INSERT      | 2023-10-31 10:20:00 |
+-- |    2     |   1   | Amit Kumar  | 12345   | UPDATE      | 2023-10-31 10:21:00 |
+-- +----------+-------+-------------+---------+-------------+---------------------+
+
+-- Explanation:
+-- The triggers `client_insert_audit` and `client_update_audit` capture each insert or update action on `client_master` into `client_Audit`,
+-- storing the new or old values along with an action type and timestamp.

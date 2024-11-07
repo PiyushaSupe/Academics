@@ -1,0 +1,43 @@
+create database jobinfo;
+use jobinfo;
+-- 7.1 Create the jobs table with job_id as primary key
+CREATE TABLE jobs (
+    job_id INT PRIMARY KEY,
+    job_title VARCHAR(100),
+    min_sal DECIMAL(10, 2),
+    max_sal DECIMAL(10, 2)
+);
+
+-- 7.2 Insert records into the jobs table
+INSERT INTO jobs (job_id, job_title, min_sal, max_sal) VALUES
+(1, 'Software Engineer', 30000, 60000),
+(2, 'Data Analyst', 25000, 55000),
+(3, 'Project Manager', 50000, 90000),
+(4, 'HR Specialist', 20000, 45000);
+
+-- 7.3 Create the job_history table with a unique constraint on employee_id
+-- and a foreign key constraint on job_id to ensure valid job references
+CREATE TABLE job_history (
+    employee_id INT UNIQUE,
+    start_date DATE,
+    end_date DATE,
+    job_id INT,
+    department_id INT,
+    FOREIGN KEY (job_id) REFERENCES jobs(job_id)
+);
+
+-- 7.4 Insert records into the job_history table
+INSERT INTO job_history (employee_id, start_date, end_date, job_id, department_id) VALUES
+(101, '2020-01-15', '2022-06-30', 1, 10),
+(102, '2019-03-20', '2021-12-01', 2, 20),
+(103, '2018-07-10', '2023-08-20', 3, 30),
+(104, '2021-09-01', NULL, 4, 40); -- End_date is NULL for current employment
+select * from jobs;
+select * from job_history;
+
+-- Explanation:
+-- - The `jobs` table contains job roles with salary ranges, ensuring job_id uniqueness.
+-- - The `job_history` table logs each employee's job history with start and end dates.
+-- - The foreign key constraint on `job_id` in `job_history` ensures that only jobs listed in the `jobs` table can be referenced, maintaining data integrity.
+-- - The unique constraint on `employee_id` ensures that each employee appears only once in `job_history`.
+

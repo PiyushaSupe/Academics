@@ -1,0 +1,89 @@
+create database custinfo;
+use custinfo;
+
+-- 19.1 Create the customer table
+CREATE TABLE customer (
+    cust_id INT PRIMARY KEY,
+    c_name VARCHAR(100),
+    addr VARCHAR(100)
+);
+
+-- 19.2 Create the cust_Audit table to store changes
+CREATE TABLE cust_Audit (
+    audit_id INT AUTO_INCREMENT PRIMARY KEY,
+    cust_id INT,
+    c_name VARCHAR(100),
+    addr VARCHAR(100),
+    action_type VARCHAR(10), -- 'UPDATE' or 'DELETE'
+    action_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 19.3 Insert sample data into customer table
+INSERT INTO customer (cust_id, c_name, addr) VALUES
+(1, 'Amit Kumar', 'Mumbai'),
+(2, 'Neha Singh', 'Delhi'),
+(3, 'Rajesh Patil', 'Bangalore');
+
+-- Display table contents before trigger actions
+SELECT * FROM customer;
+
+-- Expected Output:
+-- +---------+-------------+-----------+
+-- | cust_id | c_name      | addr      |
+-- +---------+-------------+-----------+
+-- |    1    | Amit Kumar  | Mumbai    |
+-- |    2    | Neha Singh  | Delhi     |
+-- |    3    | Rajesh Patil| Bangalore |
+-- +---------+-------------+-----------+
+
+-- 19.4 Create the trigger to track updates on customer
+-- Use a custom delimiter to handle the trigger's BEGIN...END block
+DELIMITER //
+
+-- Trigger to track updates on customer
+CREATE TRIGGER customer_update_audit
+AFTER UPDATE ON customer
+FOR EACH ROW
+BEGIN
+    INSERT INTO cust_Audit (cust_id, c_name, addr, action_type)
+    VALUES (OLD.cust_id, OLD.c_name, OLD.addr, 'UPDATE');
+END;
+//
+
+-- Trigger to track deletions from customer
+CREATE TRIGGER customer_delete_audit
+AFTER DELETE ON customer
+FOR EACH ROW
+BEGIN
+    INSERT INTO cust_Audit (cust_id, c_name, addr, action_type)
+    VALUES (OLD.cust_id, OLD.c_name, OLD.addr, 'DELETE');
+END;
+//
+
+-- Reset the delimiter back to the default
+DELIMITER ;
+
+
+-- 19.6 Perform an update operation to trigger the update audit
+UPDATE customer
+SET addr = 'Hyderabad'
+WHERE cust_id = 1;
+
+-- 19.7 Perform a delete operation to trigger the delete audit
+DELETE FROM customer
+WHERE cust_id = 2;
+
+-- Display audit table contents after update and delete operations
+SELECT * FROM cust_Audit;
+
+-- Expected Output:
+-- +----------+---------+-------------+-----------+-------------+---------------------+
+-- | audit_id | cust_id | c_name      | addr      | action_type | action_date         |
+-- +----------+---------+-------------+-----------+-------------+---------------------+
+-- |    1     |    1    | Amit Kumar  | Mumbai    | UPDATE      | 2023-10-31 10:15:00 |
+-- |    2     |    2    | Neha Singh  | Delhi     | DELETE      | 2023-10-31 10:16:00 |
+-- +----------+---------+-------------+-----------+-------------+---------------------+
+
+-- Explanation:
+-- This trigger setup logs each update or delete action on `customer` into the `cust_Audit` table, 
+-- capturing details of the action and the old data values.

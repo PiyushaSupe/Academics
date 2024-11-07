@@ -1,0 +1,43 @@
+-- Create the employee table
+create database employee;
+use employee;
+CREATE TABLE employee (
+    emp_id INT PRIMARY KEY,
+    e_name VARCHAR(100),
+    salary DECIMAL(10, 2),
+    Date_of_Joining DATE,
+    Dapt_no INT,
+    Designation VARCHAR(50)
+);
+
+-- Insert 10 records into the employee table
+INSERT INTO employee (emp_id, e_name, salary, Date_of_Joining, Dapt_no, Designation) VALUES
+(1, 'Rajesh Kumar', 50000, '2020-01-15', 1, 'Manager'),
+(2, 'Anjali Singh', 45000, '2021-05-20', 2, 'Marketing'),
+(3, 'Vikram Desai', 40000, '2019-07-18', 3, 'Developer'),
+(4, 'Sunita Rao', 55000, '2022-02-25', 1, 'Manager'),
+(5, 'Ravi Sharma', 38000, '2018-09-10', 4, 'HR'),
+(6, 'Neha Patel', 47000, '2017-11-05', 2, 'Sales'),
+(7, 'Amitabh Bhatt', 53000, '2021-06-14', 3, 'Developer'),
+(8, 'Pooja Joshi', 41000, '2020-08-21', 4, 'Analyst'),
+(9, 'Sanjay Reddy', 48000, '2019-10-17', 1, 'Manager'),
+(10, 'Kiran Gupta', 46000, '2019-03-22', 2, 'Marketing');
+
+-- Create a view emp_vl of the employee table with emp_id, e_name, and Dapt_no
+CREATE VIEW emp_vl AS
+SELECT emp_id, e_name, Dapt_no
+FROM employee;
+
+-- Update the department of an employee in the view and check if it reflects in the base table
+UPDATE emp_vl
+SET Dapt_no = 5
+WHERE emp_id = 3;
+
+
+
+
+SHOW INDEX FROM employee;
+
+-- Create a user-defined index on the Designation column
+CREATE INDEX idx_designation ON employee(Designation);
+select  from employee;

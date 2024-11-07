@@ -1,0 +1,55 @@
+create database personinfo;
+use personinfo;
+-- drop databse personinfo
+-- 14.1 Create the person table
+CREATE TABLE person (
+    person_id INT PRIMARY KEY,
+    name VARCHAR(100),
+    addr VARCHAR(100),
+    profession VARCHAR(50)
+);
+
+-- 14.2 Insert sample data into the person table
+INSERT INTO person (person_id, name, addr, profession) VALUES
+(1, 'Amit Shah', 'Mumbai', 'Engineer'),
+(2, 'Neha Singh', 'Delhi', 'Doctor'),
+(3, 'Rajesh Kumar', 'Bangalore', 'Engineer'),
+(4, 'Priya Das', 'Mumbai', 'Teacher'),
+(5, 'Rakesh Patil', 'Delhi', 'Doctor'),
+(6, 'Pooja Verma', 'Hyderabad', 'Engineer');
+
+-- Display table after insertion
+SELECT * FROM person;
+
+-- Expected Output:
+-- +-----------+-------------+-----------+------------+
+-- | person_id | name        | addr      | profession |
+-- +-----------+-------------+-----------+------------+
+-- |    1      | Amit Shah   | Mumbai    | Engineer   |
+-- |    2      | Neha Singh  | Delhi     | Doctor     |
+-- |    3      | Rajesh Kumar| Bangalore | Engineer   |
+-- |    4      | Priya Das   | Mumbai    | Teacher    |
+-- |    5      | Rakesh Patil| Delhi     | Doctor     |
+-- |    6      | Pooja Verma | Hyderabad | Engineer   |
+-- +-----------+-------------+-----------+------------+
+
+-- 14.3 MapReduce operation: Group persons by profession and count them
+-- Map: Select the profession and count of persons
+-- Reduce: Sum up the counts for each profession
+
+SELECT profession, COUNT(*) AS profession_count
+FROM person
+GROUP BY profession;
+
+-- Expected Output:
+-- +------------+------------------+
+-- | profession | profession_count |
+-- +------------+------------------+
+-- | Doctor     |        2         |
+-- | Engineer   |        3         |
+-- | Teacher    |        1         |
+-- +------------+------------------+
+
+-- Explanation:
+-- This MapReduce operation groups persons by profession and counts the number of individuals in each profession.
+-- It allows identifying the distribution of people across various professions in the `person` table.

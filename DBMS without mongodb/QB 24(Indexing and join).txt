@@ -1,0 +1,61 @@
+// 1. Create Collection
+db.createCollection("person") // This creates a new collection named 'person'
+
+// 2. Inserting Data into Collection
+
+// Insert a Single Document
+db.person.insertOne({
+  person_id: 1,
+  name: "John Doe",
+  addr: "123 Main St, Anytown",
+  profession: "Software Engineer"
+})
+
+// Insert Multiple Documents
+db.person.insertMany([
+  {
+    person_id: 2,
+    name: "Jane Smith",
+    addr: "456 Oak St, Anytown",
+    profession: "Data Scientist"
+  },
+  {
+    person_id: 3,
+    name: "Alice Johnson",
+    addr: "789 Pine St, Anytown",
+    profession: "Designer"
+  }
+])
+
+// 3. Reading Data from Collection
+
+// Find All Documents
+db.person.find()
+
+// Find Documents with a Specific Condition
+db.person.find({ profession: "Software Engineer" })
+
+// Find a Single Document by person_id
+db.person.findOne({ person_id: 1 })
+
+// 4. Updating Data in Collection
+
+// Update a Single Document
+db.person.updateOne(
+  { person_id: 1 },  // Filter: find the document with person_id 1
+  { $set: { addr: "789 Elm St, Anytown" } }  // Update: change the address
+)
+
+// Update Multiple Documents
+db.person.updateMany(
+  { profession: "Designer" },  // Filter: find all designers
+  { $set: { addr: "101 Maple St, Anytown" } }  // Update: change their addresses
+)
+
+// 5. Deleting Data from Collection
+
+// Delete a Single Document
+db.person.deleteOne({ person_id: 1 }) // This deletes the document with person_id 1
+
+// Delete Multiple Documents
+db.person.deleteMany({ profession: "Designer" }) // This deletes all documents with the profession 'Designer'

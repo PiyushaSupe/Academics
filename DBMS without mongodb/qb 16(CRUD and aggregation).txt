@@ -1,0 +1,67 @@
+// 1. Display the count of employees department-wise
+db.employee.aggregate([
+  {
+    $group: {
+      _id: "$Dept_no",           // Group by department number
+      employeeCount: { $sum: 1 } // Count the number of employees in each department
+    }
+  }
+])
+
+// 2. Display the average salary of employees in the sales department
+db.employee.aggregate([
+  {
+    $match: { Dept_no: "Sales" } // Filter to include only Sales department
+  },
+  {
+    $group: {
+      _id: null,                  // No specific grouping
+      averageSalary: { $avg: "$salary" } // Calculate average salary
+    }
+  }
+])
+
+// 3. Display the minimum salary of employees who joined in June 2016
+db.employee.aggregate([
+  {
+    $match: {
+      Date_of_Joining: {
+        $gte: new Date("2016-06-01"), // Start of June 2016
+        $lt: new Date("2016-07-01")    // Start of July 2016
+      }
+    }
+  },
+  {
+    $group: {
+      _id: null,                  // No specific grouping
+      minimumSalary: { $min: "$salary" } // Calculate minimum salary
+    }
+  }
+])
+
+// 4. Display the maximum salary given to employees in the production department
+db.employee.aggregate([
+  {
+    $match: { Dept_no: "Production" } // Filter to include only Production department
+  },
+  {
+    $group: {
+      _id: null,                  // No specific grouping
+      maximumSalary: { $max: "$salary" } // Calculate maximum salary
+    }
+  }
+])
+
+// 5. Display record of the first and last employee department-wise
+db.employee.aggregate([
+  {
+    $sort: { Date_of_Joining: 1 } // Sort employees by Date of Joining (ascending)
+  },
+  {
+    $group: {
+      _id: "$Dept_no",            // Group by department number
+      firstEmployee: { $first: "$$ROOT" }, // Get the first employee in each department
+      lastEmployee: { $last: "$$ROOT" }    // Get the last employee in each department
+    }
+  }
+])

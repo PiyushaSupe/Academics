@@ -1,0 +1,56 @@
+Here’s a step-by-step guide on performing CRUD operations in MongoDB using the mongosh shell with a collection called person. 
+
+1. Create Collection
+  db.createCollection("person")                     //Create Collection 
+
+  
+
+2. Insert Data into Collection
+ // Insert a single document
+db.person.insertOne({
+   person_id: 1,
+   name: "Alice",
+   addr: "123 Main St",
+   profession: "Engineer"
+})
+
+// Insert multiple documents
+db.person.insertMany([
+   { person_id: 2, name: "Bob", addr: "456 Elm St", profession: "Doctor" },
+   { person_id: 3, name: "Charlie", addr: "789 Maple Ave", profession: "Teacher" }
+])
+
+
+3. Read Data from Collection
+
+// Retrieve all documents
+db.person.find()
+
+// Retrieve specific fields
+db.person.find({}, { name: 1, profession: 1, _id: 0 })
+
+// Find a document with a specific condition
+db.person.find({ name: "Alice" })
+
+
+
+4. Update Data in Collection
+// Update a single document
+db.person.updateOne(
+   { person_id: 1 },
+   { $set: { addr: "321 Oak St", profession: "Senior Engineer" } }
+)
+
+// Update multiple documents
+db.person.updateMany(
+   { profession: "Doctor" },
+   { $set: { profession: "Surgeon" } }
+)
+
+5. Delete Data from Collection 
+// Delete a single document
+db.person.deleteOne({ person_id: 3 })
+
+// Delete multiple documents
+db.person.deleteMany({ profession: "Surgeon" })
+

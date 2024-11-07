@@ -1,0 +1,53 @@
+// Use the database
+use companyDB
+
+// Create the employees collection and insert sample data
+db.employees.insertMany([
+    { emp_id: 1, name: "Alice", salary: 50000, date_of_joining: new Date("2020-01-15"), department: "Sales", designation: "Manager" },
+    { emp_id: 2, name: "Bob", salary: 60000, date_of_joining: new Date("2021-06-10"), department: "Sales", designation: "Executive" },
+    { emp_id: 3, name: "Charlie", salary: 55000, date_of_joining: new Date("2019-09-23"), department: "Marketing", designation: "Manager" },
+    { emp_id: 4, name: "David", salary: 52000, date_of_joining: new Date("2020-11-05"), department: "Production", designation: "Executive" },
+    { emp_id: 5, name: "Eve", salary: 70000, date_of_joining: new Date("2018-07-21"), department: "Sales", designation: "Manager" },
+    { emp_id: 6, name: "Frank", salary: 47000, date_of_joining: new Date("2020-03-19"), department: "Production", designation: "Executive" }
+])
+
+// Aggregation Examples
+// 1. Count of employees by department
+db.employees.aggregate([
+    { $group: { _id: "$department", count: { $sum: 1 } } }
+])
+
+// 2. Average salary in Sales department
+db.employees.aggregate([
+    { $match: { department: "Sales" } },
+    { $group: { _id: "$department", average_salary: { $avg: "$salary" } } }
+])
+
+// 3. Minimum salary of employees who joined in 2020
+db.employees.aggregate([
+    { $match: { date_of_joining: { $gte: new Date("2020-01-01"), $lt: new Date("2021-01-01") } } },
+    { $group: { _id: null, min_salary: { $min: "$salary" } } }
+])
+
+// 4. Maximum salary in Production department
+db.employees.aggregate([
+    { $match: { department: "Production" } },
+    { $group: { _id: "$department", max_salary: { $max: "$salary" } } }
+])
+
+// 5. First and last employee by department
+db.employees.aggregate([
+    { $sort: { department: 1, date_of_joining: 1 } },
+    { $group: { 
+        _id: "$department", 
+        first_employee: { $first: "$name" }, 
+        last_employee: { $last: "$name" }
+    } }
+])
+
+// Indexing Examples
+// 1. Create an index on department
+db.employees.createIndex({ department: 1 })
+
+// 2. Create a compound index on department and salary
+db.employees.createIndex({ department: 1, salary: -1 })
